@@ -1,0 +1,87 @@
+services:
+
+  node-0:
+    build: .
+    container_name: blockchain-node-0
+    command: >
+      -id node-0
+      -p2p :3000
+      -api :8080
+      -nodes "node-0@node-0:3000,node-1@node-1:3000,node-2@node-2:3000,node-3@node-3:3000"
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+    volumes:
+      - node0-data:/app/data
+    networks:
+      - blockchain
+
+  node-1:
+    build: .
+    container_name: blockchain-node-1
+    command: >
+      -id node-1
+      -p2p :3000
+      -api :8080
+      -nodes "node-0@node-0:3000,node-1@node-1:3000,node-2@node-2:3000,node-3@node-3:3000"
+      -peers "node-0:3000"
+    ports:
+      - "3001:3000"
+      - "8081:8080"
+    volumes:
+      - node1-data:/app/data
+    networks:
+      - blockchain
+    depends_on:
+      - node-0
+
+  node-2:
+    build: .
+    container_name: blockchain-node-2
+    command: >
+      -id node-2
+      -p2p :3000
+      -api :8080
+      -nodes "node-0@node-0:3000,node-1@node-1:3000,node-2@node-2:3000,node-3@node-3:3000"
+      -peers "node-0:3000,node-1:3000"
+    ports:
+      - "3002:3000"
+      - "8082:8080"
+    volumes:
+      - node2-data:/app/data
+    networks:
+      - blockchain
+    depends_on:
+      - node-0
+      - node-1
+
+  node-3:
+    build: .
+    container_name: blockchain-node-3
+    command: >
+      -id node-3
+      -p2p :3000
+      -api :8080
+      -nodes "node-0@node-0:3000,node-1@node-1:3000,node-2@node-2:3000,node-3@node-3:3000"
+      -peers "node-0:3000,node-1:3000,node-2:3000"
+    ports:
+      - "3003:3000"
+      - "8083:8080"
+    volumes:
+      - node3-data:/app/data
+    networks:
+      - blockchain
+    depends_on:
+      - node-0
+      - node-1
+      - node-2
+
+volumes:
+  node0-data:
+  node1-data:
+  node2-data:
+  node3-data:
+
+networks:
+  blockchain:
+    driver: bridge
